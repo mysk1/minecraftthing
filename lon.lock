@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "sources": {
+    "nixpkgs": {
+      "type": "Tarball",
+      "fetchType": "tarball",
+      "origin": "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz",
+      "revision": "aa48d347080940b8a2b8d2f48228674e280a3514",
+      "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.11pre1085827.aa48d3470809/nixexprs.tar.xz?rev=aa48d347080940b8a2b8d2f48228674e280a3514&lastModified=1791191277",
+      "hash": "sha256-R4B+RRYmze9htmPZ8xeF19mchTSH99GdaqanKCW8CF8="
+    }
+  }
+}
