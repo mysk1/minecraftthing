@@ -1,0 +1,9 @@
+version = "26.3"
+
+[mods.sodium]
+source = "modrinth"
+name = "sodium"
+
+[mods.musgo]
+source = "modrinth"
+name = "musgo"

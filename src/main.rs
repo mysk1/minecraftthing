@@ -1,6 +1,8 @@
 use anyhow::Result;
 use std::io::{self, Read};
 
+mod config;
+
 fn main() -> Result<()> {
     println!("Please input the name of a mod from modrinth");
     println!("e.g given https://modrinth.com/mod/sodium, input 'sodium'");
@@ -8,8 +10,8 @@ fn main() -> Result<()> {
     let mut mod_name = String::new();
 
     io::stdin()
-      .read_line(&mut mod_name)
-      .expect("Failed to read line");
+        .read_line(&mut mod_name)
+        .expect("Failed to read line");
 
     let mod_link = format!("https://api.modrinth.com/v2/project/{mod_name}");
 
@@ -20,7 +22,9 @@ fn main() -> Result<()> {
 
     println!("Status: {}", res.status());
     println!("Headers:\n{:#?}", res.headers());
-    println!("Body:\n{}", body);
+    println!("Body:\n{}\n", body);
+
+    config::parse();
 
     Ok(())
 }
