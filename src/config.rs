@@ -1,6 +1,13 @@
 use std::fs;
 use toml::Table;
 
+pub struct Mod {
+    game_version: String,
+    loader: String,
+    slug: String,
+    projectid: String,
+}
+
 pub fn parse() -> () {
     let config_file = fs::read_to_string("modlist.toml").expect("Shoulda had a file buddy");
 
