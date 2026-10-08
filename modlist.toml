@@ -3,9 +3,8 @@ modloader = "fabric"
 
 [mods.sodium]
 source = "modrinth"
-name = "sodium"
-projectid = "AANobbMI"
+id = "AANobbMI"
 
 [mods.musgo]
 source = "modrinth"
-name = "musgo"
+id = "poo"

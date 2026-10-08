@@ -1,19 +1,35 @@
 use std::fs;
-use toml::Table;
+use serde::Deserialize;
 
+use std::collections::HashMap;
+
+#[derive(Deserialize)]
+pub struct Config {
+    version: String,
+    modloader: String,
+    mods: HashMap<String, Mod>,
+}
+
+#[derive(Deserialize)]
+#[derive(Debug)]
 pub struct Mod {
-    game_version: String,
-    loader: String,
-    slug: String,
-    projectid: String,
+    pub source: String,
+    pub id: String,
 }
 
 pub fn parse() -> () {
     let config_file = fs::read_to_string("modlist.toml").expect("Shoulda had a file buddy");
 
-    let parsed_config = config_file.parse::<Table>().unwrap();
+    let config: Config = toml::from_str(&config_file).unwrap();
 
-    if let Some(mods) = parsed_config.get("mods") {
-        println!("Mod list = {mods}");
+
+    println!("Your mods:");
+    let mods = config.mods;
+    let mut index = 1;
+    for (name, info) in mods {
+        let Mod { id, source} = info;
+
+        println!("{index}. Name: {name:?}, id: {id}, source: {source}");
+        index += 1;
     }
 }
