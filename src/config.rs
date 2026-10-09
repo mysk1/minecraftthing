@@ -2,12 +2,13 @@ use std::fs;
 use serde::Deserialize;
 
 use std::collections::HashMap;
+use crate::modrinth;
 
 #[derive(Deserialize)]
 pub struct Config {
-    version: String,
-    modloader: String,
-    mods: HashMap<String, Mod>,
+    pub version: String,
+    pub modloader: String,
+    pub mods: HashMap<String, Mod>,
 }
 
 #[derive(Deserialize)]
@@ -31,5 +32,7 @@ pub fn parse() -> () {
 
         println!("{index}. Name: {name:?}, id: {id}, source: {source}");
         index += 1;
+
+        modrinth::call_modrinth(id, &config.version, &config.modloader).expect("Error");
     }
 }
