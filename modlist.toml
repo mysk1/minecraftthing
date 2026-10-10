@@ -5,6 +5,6 @@ modloader = "fabric"
 source = "modrinth"
 id = "AANobbMI"
 
-[mods.musgo]
-source = "modrinth"
-id = "poo"
+# [mods.musgo]
+# source = "modrinth"
+# id = "poo"

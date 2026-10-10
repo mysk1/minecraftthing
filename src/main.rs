@@ -17,7 +17,11 @@ fn main() -> Result<()> {
 
     let client = modrinth::create_client();
     let (mods, version, modloader) = config::parse();
-    modrinth::call_modrinth(mods, version, modloader, client).expect("POOP");
+
+    let responses = modrinth::call_modrinth(mods, version, modloader, client).expect("POOP");
+    let links = modrinth::parse_modrinth(responses).expect("super poop");
+
+    modrinth::download_file(links);
 
     Ok(())
 }

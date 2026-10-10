@@ -1,8 +1,7 @@
-use std::fs;
 use serde::Deserialize;
+use std::fs;
 
 use std::collections::HashMap;
-use crate::modrinth;
 
 #[derive(Deserialize)]
 pub struct Config {
@@ -12,7 +11,6 @@ pub struct Config {
 }
 
 #[derive(Deserialize)]
-#[derive(Debug)]
 pub struct Mod {
     pub source: String,
     pub id: String,
@@ -28,13 +26,6 @@ pub fn parse() -> (HashMap<String, Mod>, String, String) {
 
     println!("Your mods:");
     let mods = config.mods;
-    //let mut index = 1;
-    //for (name, info) in mods {
-    //    let Mod { id, source} = info;
 
-    //    println!("{index}. Name: {name:?}, id: {id}, source: {source}");
-    //    index += 1;
-
-    //}
     return (mods, version, modloader);
 }
