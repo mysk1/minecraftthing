@@ -6,8 +6,8 @@ use crate::modrinth;
 
 #[derive(Deserialize)]
 pub struct Config {
-    pub version: String,
-    pub modloader: String,
+    version: String,
+    modloader: String,
     pub mods: HashMap<String, Mod>,
 }
 
@@ -18,21 +18,23 @@ pub struct Mod {
     pub id: String,
 }
 
-pub fn parse() -> () {
+pub fn parse() -> (HashMap<String, Mod>, String, String) {
     let config_file = fs::read_to_string("modlist.toml").expect("Shoulda had a file buddy");
 
     let config: Config = toml::from_str(&config_file).unwrap();
 
+    let version = config.version;
+    let modloader = config.modloader;
 
     println!("Your mods:");
     let mods = config.mods;
-    let mut index = 1;
-    for (name, info) in mods {
-        let Mod { id, source} = info;
+    //let mut index = 1;
+    //for (name, info) in mods {
+    //    let Mod { id, source} = info;
 
-        println!("{index}. Name: {name:?}, id: {id}, source: {source}");
-        index += 1;
+    //    println!("{index}. Name: {name:?}, id: {id}, source: {source}");
+    //    index += 1;
 
-        modrinth::call_modrinth(id, &config.version, &config.modloader).expect("Error");
-    }
+    //}
+    return (mods, version, modloader);
 }

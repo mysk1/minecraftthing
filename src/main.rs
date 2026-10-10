@@ -15,7 +15,9 @@ fn main() -> Result<()> {
 
     //modrinth::call_modrinth(mod_name).expect("Poo");
 
-    config::parse();
+    let client = modrinth::create_client();
+    let (mods, version, modloader) = config::parse();
+    modrinth::call_modrinth(mods, version, modloader, client).expect("POOP");
 
     Ok(())
 }
