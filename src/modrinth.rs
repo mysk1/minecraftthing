@@ -57,26 +57,28 @@ struct _ApiResponse<T> {
     error: Option<String>,
 }
 
-pub fn parse_modrinth(responses: Vec<String>) -> Result<Vec<String>> {
-    let mut url_list: Vec<String> = Vec::new();
+pub fn parse_modrinth(responses: Vec<String>) -> Result<Vec<(String, String)>> {
+    let mut url_list: Vec<(String, String)> = Vec::new();
     for json in &responses {
         let parsed: Value = serde_json::from_str(json)?;
 
         let url = parsed[0]["files"][0]["url"].to_string();
+        let filename = parsed[0]["files"][0]["filename"].to_string();
 
-        url_list.push(url);
+        url_list.push((url, filename));
     }
 
     Ok(url_list)
 }
 
-pub fn download_file(url_list: Vec<String>) -> Result<()> {
-    for url in url_list {
+pub fn download_file(url_list: Vec<(String, String)>) -> Result<()> {
+    for (url, filename) in url_list {
         let url_parsed = rem_first_and_last(&url);
+        let filename_parsed = rem_first_and_last(&filename);
 
         let resp = reqwest::blocking::get(url_parsed).expect("request failed");
         let body = resp.text().expect("body invalid");
-        let mut out = std::fs::File::create("yourmod.jar").expect("failed to create file");
+        let mut out = std::fs::File::create(filename_parsed).expect("failed to create file");
         std::io::copy(&mut body.as_bytes(), &mut out).expect("failed to copy content");
     }
 
