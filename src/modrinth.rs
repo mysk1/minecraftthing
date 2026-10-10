@@ -10,9 +10,10 @@ use crate::config::Mod;
 
 pub fn create_client() -> Client {
     let client = Client::new();
-    return client;
+    client
 }
 
+// given a list of mods, query all of them on modrinth
 pub fn call_modrinth(
     mods: HashMap<String, Mod>,
     version: String,
@@ -33,7 +34,7 @@ pub fn call_modrinth(
                 ("include_changelog", "false"),
                 ("loaders", &format!("[\"{loader}\"]")),
                 ("game_versions", &format!("[\"{version}\"]")),
-            ])
+            ]) // only include the stuff we want, keep it snappy
             .send()?;
 
         let mut body = String::new();
@@ -62,6 +63,7 @@ pub fn parse_modrinth(responses: Vec<String>) -> Result<Vec<(String, String)>> {
     for json in &responses {
         let parsed: Value = serde_json::from_str(json)?;
 
+        // kinda bad but probably overkill to make a whole typed data structure
         let url = parsed[0]["files"][0]["url"].to_string();
         let filename = parsed[0]["files"][0]["filename"].to_string();
 
@@ -73,6 +75,7 @@ pub fn parse_modrinth(responses: Vec<String>) -> Result<Vec<(String, String)>> {
 
 pub fn download_file(url_list: Vec<(String, String)>) -> Result<()> {
     for (url, filename) in url_list {
+        // knock on from .to_string() above
         let url_parsed = rem_first_and_last(&url);
         let filename_parsed = rem_first_and_last(&filename);
 

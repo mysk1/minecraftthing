@@ -12,7 +12,7 @@ pub struct Config {
 
 #[derive(Deserialize)]
 pub struct Mod {
-    pub source: String,
+    pub source: String, // placeholder for later
     pub id: String,
 }
 
@@ -27,5 +27,5 @@ pub fn parse() -> (HashMap<String, Mod>, String, String) {
     println!("Your mods:");
     let mods = config.mods;
 
-    return (mods, version, modloader);
+    (mods, version, modloader)
 }
