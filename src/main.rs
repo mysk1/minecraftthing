@@ -21,7 +21,16 @@ fn main() -> Result<()> {
     let responses = modrinth::call_modrinth(mods, version, modloader, client).expect("POOP");
     let links = modrinth::parse_modrinth(responses).expect("super poop");
 
-    modrinth::download_file(links);
+    let mut download_prompt = String::new();
+
+    println!("Would you like to download the files?");
+    std::io::stdin()
+        .read_line(&mut download_prompt)
+        .expect("Failed to read line");
+
+    if download_prompt.trim() == "y" {
+        modrinth::download_file(links);
+    }
 
     Ok(())
 }
