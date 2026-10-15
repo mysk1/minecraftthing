@@ -3,14 +3,19 @@ use reqwest::blocking::Client;
 use serde::Serialize;
 use serde_json::Value;
 
+use std::time::Duration;
 use std::collections::HashMap;
 use std::io::Read;
 
 use crate::config::Mod;
 
-pub fn create_client() -> Client {
-    let client = Client::new();
-    client
+pub fn create_client() -> Result<Client> {
+    let client = Client::builder()
+    .timeout(Duration::from_secs(30))
+    .connect_timeout(Duration::from_secs(10))
+    .user_agent("NUMMA")
+    .build()?;
+    Ok(client)
 }
 
 // given a list of mods, query all of them on modrinth

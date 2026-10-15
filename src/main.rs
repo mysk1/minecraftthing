@@ -5,8 +5,9 @@ mod config;
 mod modrinth;
 
 fn main() -> Result<()> {
-    let client = modrinth::create_client();
-    let config_file: String = match config::read() {
+        let client = modrinth::create_client()?;
+
+        let config_file: String = match config::read() {
         Ok(c) => c,
         Err(e) if e.kind() == ErrorKind::NotFound => {
             println!("No manifest found in cwd");
@@ -34,7 +35,7 @@ fn main() -> Result<()> {
 
     let mut download_prompt = String::new();
 
-    println!("Would you like to download the files?");
+    println!("Would you like to download the files?(y/n)");
     std::io::stdin()
         .read_line(&mut download_prompt)
         .expect("Failed to read line");
