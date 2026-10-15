@@ -1,0 +1,10 @@
+version = "26.3"
+modloader = "fabric"
+
+[mods.sodium]
+source = "modrinth"
+id = "AANobbMI"
+
+[mods.fabric-api]
+source = "modrinth"
+id = "P7dR8mSH"

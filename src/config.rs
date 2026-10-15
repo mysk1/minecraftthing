@@ -1,6 +1,6 @@
 use serde::Deserialize;
-use std::fs;
 
+use std::fs;
 use std::collections::HashMap;
 
 #[derive(Deserialize)]
@@ -16,10 +16,14 @@ pub struct Mod {
     pub id: String,
 }
 
-pub fn parse() -> (HashMap<String, Mod>, String, String) {
-    let config_file = fs::read_to_string("modlist.toml").expect("Shoulda had a file buddy");
+pub fn read() -> Result<String, std::io::Error> {
+    let config_file = fs::read_to_string("modlist.toml")?;
 
-    let config: Config = toml::from_str(&config_file).unwrap();
+    Ok(config_file)
+}
+
+pub fn parse(config_file: String) -> Result<(HashMap<String, Mod>, String, String), toml::de::Error> {
+    let config: Config = toml::from_str(&config_file)?;
 
     let version = config.version;
     let modloader = config.modloader;
@@ -27,5 +31,5 @@ pub fn parse() -> (HashMap<String, Mod>, String, String) {
     println!("Your mods:");
     let mods = config.mods;
 
-    (mods, version, modloader)
+    Ok((mods, version, modloader))
 }

@@ -3,8 +3,8 @@ modloader = "fabric"
 
 [mods.sodium]
 source = "modrinth"
-id = "AANobbMI"
+id  "AANobbMI"
 
-# [mods.musgo]
-# source = "modrinth"
-# id = "poo"
+#[mods.musgo]
+#source = "modrinth"
+#id = "poo"

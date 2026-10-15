@@ -1,22 +1,33 @@
 use anyhow::Result;
+use std::io::ErrorKind;
 
 mod config;
 mod modrinth;
 
 fn main() -> Result<()> {
-    //println!("Please input the name of a mod from modrinth");
-    //println!("e.g given https://modrinth.com/mod/sodium, input 'sodium'");
-
-    //let mut mod_name = String::new();
-
-    //io::stdin()
-    //    .read_line(&mut mod_name)
-    //    .expect("Failed to read line");
-
-    //modrinth::call_modrinth(mod_name).expect("Poo");
-
     let client = modrinth::create_client();
-    let (mods, version, modloader) = config::parse();
+    let config_file: String = match config::read() {
+        Ok(c) => c,
+        Err(e) if e.kind() == ErrorKind::NotFound => {
+            println!("No manifest found in cwd");
+            println!("Writing default manifest into cwd");
+
+            return Ok(()); // not really a program error, we handled the case
+        },
+
+        Err(e) => {
+            return Err(e.into()); // cast io error to anyhow error i think??
+        }
+    };
+
+    let (mods, version, modloader) = match config::parse(config_file) {
+        Ok(c) => c,
+        Err(e) => {
+            println!("Error: {} at {:?}", e.message(), e.span());
+
+            return Ok(());
+        }
+    };
 
     let responses = modrinth::call_modrinth(mods, version, modloader, client).expect("POOP");
     let links = modrinth::parse_modrinth(responses).expect("super poop");
