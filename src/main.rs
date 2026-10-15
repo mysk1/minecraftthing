@@ -12,7 +12,7 @@ fn main() -> Result<()> {
             println!("No manifest found in cwd");
             println!("Writing default manifest into cwd");
 
-            return Ok(()); // not really a program error, we handled the case
+            return Ok(());
         },
 
         Err(e) => {
@@ -23,7 +23,7 @@ fn main() -> Result<()> {
     let (mods, version, modloader) = match config::parse(config_file) {
         Ok(c) => c,
         Err(e) => {
-            println!("Error: {} at {:?}", e.message(), e.span());
+            println!("Error: {e}");
 
             return Ok(());
         }
