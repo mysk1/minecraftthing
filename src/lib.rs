@@ -15,6 +15,7 @@ pub fn run() -> Result<()> {
             warn!("No manifest found in cwd");
             info!("Writing default manifest into cwd");
 
+            config::create_config();
             return Ok(());
         }
 

@@ -1,16 +1,17 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use anyhow::Result;
 
 use std::collections::HashMap;
 use std::fs;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct Config {
     version: String,
     modloader: String,
     pub mods: HashMap<String, Mod>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct Mod {
     pub source: String, // placeholder for later
     pub id: String,
@@ -36,4 +37,20 @@ pub fn parse(
     Ok((mods, version, modloader))
 }
 
-pub fn create_config() {}
+pub fn create_config() -> Result<()> {
+    let config = Config {
+        version: String::from("26.3"),
+        modloader: String::from("fabric"),
+        mods: HashMap::from([(String::from("sodium"), Mod {
+            source: String::from("modrinth"),
+            id: String::from("AANobbMI")
+        })
+        ])
+    };
+
+    let toml_string = toml::to_string_pretty(&config)?;
+
+    fs::write("test.toml", toml_string)?;
+
+    Ok(())
+}
