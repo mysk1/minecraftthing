@@ -1,7 +1,7 @@
 use serde::Deserialize;
 
-use std::fs;
 use std::collections::HashMap;
+use std::fs;
 
 #[derive(Deserialize)]
 pub struct Config {
@@ -22,7 +22,9 @@ pub fn read() -> Result<String, std::io::Error> {
     Ok(config_file)
 }
 
-pub fn parse(config_file: String) -> Result<(HashMap<String, Mod>, String, String), toml::de::Error> {
+pub fn parse(
+    config_file: String,
+) -> Result<(HashMap<String, Mod>, String, String), toml::de::Error> {
     let config: Config = toml::from_str(&config_file)?;
 
     let version = config.version;
@@ -33,3 +35,5 @@ pub fn parse(config_file: String) -> Result<(HashMap<String, Mod>, String, Strin
 
     Ok((mods, version, modloader))
 }
+
+pub fn create_config() {}
