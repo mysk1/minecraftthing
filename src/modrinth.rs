@@ -20,10 +20,10 @@ pub fn create_client() -> Result<Client> {
 
 // given a list of mods, query all of them on modrinth
 pub fn call_modrinth(
-    mods: HashMap<String, Mod>,
-    version: String,
-    loader: String,
-    client: Client,
+    mods: &HashMap<String, Mod>,
+    version: &String,
+    loader: &String,
+    client: &Client,
 ) -> Result<Vec<String>> {
     let mut responses: Vec<String> = Vec::new();
 
@@ -65,6 +65,7 @@ struct _ApiResponse<T> {
 
 pub fn parse_modrinth(responses: Vec<String>) -> Result<Vec<(String, String)>> {
     let mut url_list: Vec<(String, String)> = Vec::new();
+
     for json in &responses {
         let parsed: Value = serde_json::from_str(json)?;
 

@@ -33,7 +33,26 @@ pub fn run() -> Result<()> {
         }
     };
 
-    let responses = modrinth::call_modrinth(mods, version, modloader, client).expect("POOP");
+    let mut responses = Vec::new();
+    for i in 1..=5 {
+        match modrinth::call_modrinth(&mods, &version, &modloader, &client) {
+            Ok(c) => {
+                responses = c;
+                break;
+            },
+            Err(e) => {
+                println!("Failed to fetch from modrinth with: {e}");
+                println!("Trying again, try {i}/5");
+
+                if i == 5 {
+                    return Err(e.into());
+                } else {
+                    continue;
+                }
+            }
+        }
+    };
+
     let links = modrinth::parse_modrinth(responses).expect("super poop");
 
     let mut download_prompt = String::new();
