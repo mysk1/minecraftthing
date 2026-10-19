@@ -13,7 +13,7 @@ pub fn run() -> Result<()> {
         Ok(c) => c,
         Err(e) if e.kind() == ErrorKind::NotFound => {
             warn!("No manifest found in cwd");
-            info!("Writing default manifest into cwd");
+            info!("Writing default manifest into cwd, you should edit that file and run this again!");
 
             config::create_config();
             return Ok(());
@@ -35,14 +35,14 @@ pub fn run() -> Result<()> {
 
     let mut responses = Vec::new();
     for i in 1..=5 {
-        match modrinth::call_modrinth(&mods, &version, &modloader, &client) {
+        match modrinth::call_modrinth(mods.clone(), &version, &modloader, &client) {
             Ok(c) => {
                 responses = c;
                 break;
             },
             Err(e) => {
-                println!("Failed to fetch from modrinth with: {e}");
-                println!("Trying again, try {i}/5");
+                warn!("Failed to fetch from modrinth with: {e}");
+                info!("Trying again, try {i}/5");
 
                 if i == 5 {
                     return Err(e.into());

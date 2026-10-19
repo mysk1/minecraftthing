@@ -8,11 +8,11 @@ use std::fs;
 pub struct Config {
     version: String,
     modloader: String,
-    pub mods: HashMap<String, Mod>,
+    pub mods: HashMap<String, ModInfo>,
 }
 
-#[derive(Deserialize, Serialize)]
-pub struct Mod {
+#[derive(Deserialize, Serialize, Clone)]
+pub struct ModInfo {
     pub source: String, // placeholder for later
     pub id: String,
 }
@@ -25,7 +25,7 @@ pub fn read() -> Result<String, std::io::Error> {
 
 pub fn parse(
     config_file: String,
-) -> Result<(HashMap<String, Mod>, String, String), toml::de::Error> {
+) -> Result<(HashMap<String, ModInfo>, String, String), toml::de::Error> {
     let config: Config = toml::from_str(&config_file)?;
 
     let version = config.version;
@@ -41,7 +41,7 @@ pub fn create_config() -> Result<()> {
     let config = Config {
         version: String::from("26.3"),
         modloader: String::from("fabric"),
-        mods: HashMap::from([(String::from("sodium"), Mod {
+        mods: HashMap::from([(String::from("sodium"), ModInfo {
             source: String::from("modrinth"),
             id: String::from("AANobbMI")
         })
