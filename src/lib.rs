@@ -1,6 +1,6 @@
 use anyhow::Result;
+use log::{error, info, warn};
 use std::io::ErrorKind;
-use log::{info, warn, error};
 
 pub mod cli;
 pub mod config;
@@ -13,7 +13,9 @@ pub fn run() -> Result<()> {
         Ok(c) => c,
         Err(e) if e.kind() == ErrorKind::NotFound => {
             warn!("No manifest found in cwd");
-            info!("Writing default manifest into cwd, you should edit that file and run this again!");
+            info!(
+                "Writing default manifest into cwd, you should edit that file and run this again!"
+            );
 
             config::create_config();
             return Ok(());
@@ -39,7 +41,7 @@ pub fn run() -> Result<()> {
             Ok(c) => {
                 responses = c;
                 break;
-            },
+            }
             Err(e) => {
                 warn!("Failed to fetch from modrinth with: {e}");
                 info!("Trying again, try {i}/5");
@@ -51,9 +53,25 @@ pub fn run() -> Result<()> {
                 }
             }
         }
+    }
+
+    let vec_mods = match modrinth::parse_modrinth(responses) {
+        Ok(c) => c,
+        Err(e) => {
+            error!("Error: {e}");
+
+            return Ok(());
+        }
     };
 
-    let links = modrinth::parse_modrinth(responses).expect("super poop");
+    let links = match modrinth::generate_summary(vec_mods) {
+        Ok(c) => c,
+        Err(e) => {
+            error!("Error: {e}");
+
+            return Ok(());
+        }
+    };
 
     let mut download_prompt = String::new();
 
@@ -63,7 +81,7 @@ pub fn run() -> Result<()> {
         .expect("Failed to read line");
 
     if download_prompt.trim() == "y" {
-        modrinth::download_file(links);
+        modrinth::download_files(links);
     }
     Ok(())
 }

@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use anyhow::Result;
+use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
 use std::fs;
@@ -15,6 +15,7 @@ pub struct Config {
 pub struct ModInfo {
     pub source: String, // placeholder for later
     pub id: String,
+    pub required: Option<bool>,
 }
 
 pub fn read() -> Result<String, std::io::Error> {
@@ -41,11 +42,14 @@ pub fn create_config() -> Result<()> {
     let config = Config {
         version: String::from("26.3"),
         modloader: String::from("fabric"),
-        mods: HashMap::from([(String::from("sodium"), ModInfo {
-            source: String::from("modrinth"),
-            id: String::from("AANobbMI")
-        })
-        ])
+        mods: HashMap::from([(
+            String::from("sodium"),
+            ModInfo {
+                source: String::from("modrinth"),
+                id: String::from("AANobbMI"),
+                required: Some(true),
+            },
+        )]),
     };
 
     let toml_string = toml::to_string_pretty(&config)?;

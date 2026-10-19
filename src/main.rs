@@ -1,6 +1,6 @@
-use minecraftthing::run;
-use env_logger;
 use anyhow::Result;
+use env_logger;
+use minecraftthing::run;
 
 fn main() -> Result<()> {
     env_logger::init();

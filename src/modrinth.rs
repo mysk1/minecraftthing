@@ -26,6 +26,7 @@ pub struct Mod {
     pub api_body: String,
     pub filename: String,
     pub url: String,
+    pub required: bool,
     pub available: bool,
 }
 
@@ -39,7 +40,11 @@ pub fn call_modrinth(
     let mut responses: Vec<Mod> = Vec::new();
 
     for (name, info) in mods {
-        let ModInfo { id, source } = info;
+        let ModInfo {
+            id,
+            source,
+            required,
+        } = info;
         println!("Mod Name: {name}");
 
         let mod_link = format!("https://api.modrinth.com/v2/project/{id}/version");
@@ -56,7 +61,15 @@ pub fn call_modrinth(
         let mut body = String::new();
         res.read_to_string(&mut body)?;
 
+        let required_matched;
+        if let Some(req) = required {
+            required_matched = req;
+        } else {
+            required_matched = false;
+        };
+
         let mod_summary = Mod {
+            required: required_matched,
             source,
             id: id.clone(),
             name: name.clone(),
@@ -87,9 +100,12 @@ pub fn parse_modrinth(responses: Vec<Mod>) -> Result<Vec<Mod>> {
         let url = parsed[0]["files"][0]["url"].to_string();
         let filename = parsed[0]["files"][0]["filename"].to_string();
 
+        let available = if url == "null" { false } else { true };
+
         let mod_summary = Mod {
             url,
             filename,
+            available,
             ..entry
         };
 
@@ -99,32 +115,52 @@ pub fn parse_modrinth(responses: Vec<Mod>) -> Result<Vec<Mod>> {
     Ok(vec_mods)
 }
 
-pub fn download_file(vec_mods: Vec<Mod>) -> Result<()> {
+pub fn generate_summary(vec_mods: Vec<Mod>) -> Result<Vec<(String, String)>> {
     let count_total = vec_mods.len();
+    let mut count_found = 0u16;
+    let mut downloadable_mods = Vec::new();
 
-    for Mod { name, url, filename, .. } in vec_mods {
+    for Mod {
+        name,
+        url,
+        filename,
+        available,
+        required,
+        ..
+    } in vec_mods
+    {
+        if !available && required {
+            anyhow::bail!(
+                "The mod {name} was marked as required but wasn't found, cancelling operation."
+            )
+        };
+
+        if available {
+            println!("{name}: \x1b[32mFOUND ✔\x1b[0m");
+            downloadable_mods.push((url, filename));
+        } else {
+            println!("{name}: \x1b[31mNOT FOUND ✗\x1b[0m");
+            count_found += 1;
+        };
+    }
+
+    println!("Found {count_found} out of {count_total} mods available to download");
+
+    Ok(downloadable_mods)
+}
+
+pub fn download_files(links: Vec<(String, String)>) -> Result<()> {
+    for link in links {
+        let (url, filename) = link;
+
         // knock on from .to_string() above
         let url_parsed = rem_first_and_last(&url);
         let filename_parsed = rem_first_and_last(&filename);
 
-        let mut count_not_found: u16 = 0;
-
-        if url == "null" {
-            println!("{name}: \x1b[31mNOT FOUND\x1b[0m");
-            count_not_found += 1;
-        } else {
-            println!("{name}: \x1b[32mFOUND\x1b[0m");
-        };
-
-        // let ratio = count_not_found as f64 / count_total as f64 * 100.0;
-        println!("Failed to find {count_not_found} out of {count_total} mods, do you still want to download?");
-
-        if false {
-            let resp = reqwest::blocking::get(url_parsed).expect("request failed");
-            let body = resp.text().expect("body invalid");
-            let mut out = std::fs::File::create(filename_parsed).expect("failed to create file");
-            std::io::copy(&mut body.as_bytes(), &mut out).expect("failed to copy content");
-        };
+        let resp = reqwest::blocking::get(url_parsed).expect("request failed");
+        let body = resp.text().expect("body invalid");
+        let mut out = std::fs::File::create(filename_parsed).expect("failed to create file");
+        std::io::copy(&mut body.as_bytes(), &mut out).expect("failed to copy content");
     }
 
     Ok(())
