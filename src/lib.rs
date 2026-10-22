@@ -7,6 +7,7 @@ pub mod config;
 pub mod modrinth;
 
 pub fn run() -> Result<()> {
+
     let client = modrinth::create_client()?;
 
     let config_file: String = match config::read() {
