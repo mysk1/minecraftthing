@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand, Args};
+use clap::{Args, Parser, Subcommand};
 use std::path::PathBuf;
 
 //numma update
@@ -21,14 +21,17 @@ use std::path::PathBuf;
 
 //this might be total POO so u can change it if it is pookie
 
-#[derive(Parser)]
-#[command(version = "1.0", name = "numma", about = "A Minecraft mod updater")]
+#[derive(Debug, Parser)]
+#[command(name = "numma")]
+#[command(version = "1.0")]
+#[command(about = "A Minecraft mod updater", long_about = None)]
+#[command(arg_required_else_help = true)]
 struct Cli {
     #[command(subcommand)]
-    command: Option<Commands>,
+    command: Commands,
 }
 
-#[derive(Subcommand)]
+#[derive(Debug, Subcommand)]
 enum Commands {
     /// This is for an epic TEST!
     Test(TestArgs),
@@ -44,16 +47,17 @@ enum Commands {
     /// Add a new mod
     Add(AddArgs),
 }
-#[derive(Args)]
+
+#[derive(Debug, Args)]
 struct TestArgs {
-    #[arg(short, long)]
+    #[arg(long)]
     name: Option<String>,
 
-    #[arg(short, long)]
+    #[arg(long)]
     number: i32,
 }
 
-#[derive(Args)]
+#[derive(Debug, Args)]
 struct UpdateArgs {
     /// Quiet mode (accepts default choices without prompting)
     #[arg(short, long)]
@@ -68,19 +72,19 @@ struct UpdateArgs {
     verbose: bool,
 }
 
-#[derive(Args)]
+#[derive(Debug, Args)]
 struct ListArgs {
     //
 }
 
-#[derive(Args)]
+#[derive(Debug, Args)]
 struct SelectArgs {
     /// Path or identifier of mod folderr
     #[arg(help = "The path to the mod folder")]
     path: String,
 }
 
-#[derive(Args)]
+#[derive(Debug, Args)]
 struct SetArgs {
     /// Sets a new mod directory
     #[arg(short, long)]
@@ -96,13 +100,36 @@ struct SetArgs {
     required: Option<Vec<String>>,
 }
 
-#[derive(Args)]
+#[derive(Debug, Args)]
 struct AddArgs {
     // blegh!
 }
 
-pub fn cli_command() {
-    let cli = Cli::parse();
+fn cli_parse() -> Result<Cli, clap::Error> {
+    let args = Cli::try_parse();
+    return args;
+}
 
-    println!("yahoo");
+pub fn cli_match() {
+    let args = cli_parse().unwrap_or_else(|error| error.exit());
+
+    match args.command {
+        Commands::Test(test) => {
+            let mut greeting = String::from("HI!");
+            match test.name {
+                Some(name) => {
+                    greeting = format!("Hello {name}");
+                }
+                None => {}
+            }
+            for _i in 1..test.number {
+                println!("{greeting}");
+            }
+        }
+        Commands::Update(_update) => {}
+        Commands::List(_list) => {}
+        Commands::Select(_select) => {}
+        Commands::Set(_set) => {}
+        Commands::Add(_add) => {}
+    }
 }

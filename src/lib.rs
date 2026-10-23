@@ -7,6 +7,7 @@ pub mod config;
 pub mod modrinth;
 
 pub fn run() -> Result<()> {
+    cli::cli_match();
 
     let client = modrinth::create_client()?;
 
