@@ -26,13 +26,13 @@ use std::path::PathBuf;
 #[command(version = "1.0")]
 #[command(about = "A Minecraft mod updater", long_about = None)]
 #[command(arg_required_else_help = true)]
-struct Cli {
+pub struct Cli {
     #[command(subcommand)]
-    command: Commands,
+    pub command: Commands,
 }
 
 #[derive(Debug, Subcommand)]
-enum Commands {
+pub enum Commands {
     /// This is for an epic TEST!
     Test(TestArgs),
 
@@ -49,87 +49,63 @@ enum Commands {
 }
 
 #[derive(Debug, Args)]
-struct TestArgs {
+pub struct TestArgs {
     #[arg(long)]
-    name: Option<String>,
+    pub name: Option<String>,
 
     #[arg(long)]
-    number: i32,
+    pub number: i32,
 }
 
 #[derive(Debug, Args)]
-struct UpdateArgs {
+pub struct UpdateArgs {
     /// Quiet mode (accepts default choices without prompting)
     #[arg(short, long)]
-    quiet: bool,
+    pub quiet: bool,
 
     /// Pretend mode (shows proposed changes without applying)
     #[arg(short, long)]
-    pretend: bool,
+    pub pretend: bool,
 
     /// Verbose output
     #[arg(short, long)]
-    verbose: bool,
+    pub verbose: bool,
 }
 
 #[derive(Debug, Args)]
-struct ListArgs {
+pub struct ListArgs {
     //
 }
 
 #[derive(Debug, Args)]
-struct SelectArgs {
+pub struct SelectArgs {
     /// Path or identifier of mod folderr
     #[arg(help = "The path to the mod folder")]
-    path: String,
+    pub path: String,
 }
 
 #[derive(Debug, Args)]
-struct SetArgs {
+pub struct SetArgs {
     /// Sets a new mod directory
     #[arg(short, long)]
-    directory: Option<PathBuf>,
+    pub directory: Option<PathBuf>,
 
     /// Sets specific target minecraft version(defaults to newest)
     #[arg(default_value = "newest")]
     #[arg(short, long)]
-    mc_version: Option<String>,
+    pub mc_version: Option<String>,
 
     /// Sets a required mods for update(by name or ID)
     #[arg(short, long)]
-    required: Option<Vec<String>>,
+    pub required: Option<Vec<String>>,
 }
 
 #[derive(Debug, Args)]
-struct AddArgs {
+pub struct AddArgs {
     // blegh!
 }
 
-fn cli_parse() -> Result<Cli, clap::Error> {
+pub fn cli_parse() -> Result<Cli, clap::Error> {
     let args = Cli::try_parse();
     return args;
-}
-
-pub fn cli_match() {
-    let args = cli_parse().unwrap_or_else(|error| error.exit());
-
-    match args.command {
-        Commands::Test(test) => {
-            let mut greeting = String::from("HI!");
-            match test.name {
-                Some(name) => {
-                    greeting = format!("Hello {name}");
-                }
-                None => {}
-            }
-            for _i in 1..test.number {
-                println!("{greeting}");
-            }
-        }
-        Commands::Update(_update) => {}
-        Commands::List(_list) => {}
-        Commands::Select(_select) => {}
-        Commands::Set(_set) => {}
-        Commands::Add(_add) => {}
-    }
 }

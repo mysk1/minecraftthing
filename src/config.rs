@@ -32,10 +32,17 @@ pub fn parse(
     let version = config.version;
     let modloader = config.modloader;
 
-    println!("Your mods:");
     let mods = config.mods;
 
     Ok((mods, version, modloader))
+}
+
+pub fn list(mods: HashMap<String, ModInfo>, version: String, modloader: String) {
+    println!("Modloader: {modloader}");
+    println!("Your mods:");
+    for (name, _info) in mods {
+        println!("name: {name}, version: {version}");
+    }
 }
 
 pub fn create_config() -> Result<()> {

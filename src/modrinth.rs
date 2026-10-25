@@ -45,7 +45,6 @@ pub fn call_modrinth(
             source,
             required,
         } = info;
-        println!("Mod Name: {name}");
 
         let mod_link = format!("https://api.modrinth.com/v2/project/{id}/version");
 
@@ -138,9 +137,9 @@ pub fn generate_summary(vec_mods: Vec<Mod>) -> Result<Vec<(String, String)>> {
         if available {
             println!("{name}: \x1b[32mFOUND ✔\x1b[0m");
             downloadable_mods.push((url, filename));
+            count_found += 1;
         } else {
             println!("{name}: \x1b[31mNOT FOUND ✗\x1b[0m");
-            count_found += 1;
         };
     }
 
