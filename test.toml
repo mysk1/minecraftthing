@@ -1,7 +1,0 @@
-version = "26.3"
-modloader = "fabric"
-
-[mods.sodium]
-source = "modrinth"
-id = "AANobbMI"
-required = true
