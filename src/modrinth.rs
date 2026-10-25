@@ -114,7 +114,7 @@ pub fn parse_modrinth(responses: Vec<Mod>) -> Result<Vec<Mod>> {
     Ok(vec_mods)
 }
 
-pub fn generate_summary(vec_mods: Vec<Mod>) -> Result<Vec<(String, String)>> {
+pub fn generate_summary(vec_mods: Vec<Mod>) -> Result<(Vec<(String, String)>, f64)> {
     let count_total = vec_mods.len();
     let mut count_found = 0u16;
     let mut downloadable_mods = Vec::new();
@@ -145,7 +145,9 @@ pub fn generate_summary(vec_mods: Vec<Mod>) -> Result<Vec<(String, String)>> {
 
     println!("Found {count_found} out of {count_total} mods available to download");
 
-    Ok(downloadable_mods)
+    let ratio = count_found as f64 / count_total as f64;
+
+    Ok((downloadable_mods, ratio))
 }
 
 pub fn download_files(links: Vec<(String, String)>) -> Result<()> {

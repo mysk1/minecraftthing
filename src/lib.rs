@@ -45,7 +45,7 @@ pub fn run() -> Result<()> {
                 }
             };
 
-            let (mods, version, modloader) = match config::parse(config_file) {
+            let config = match config::parse(config_file) {
                 Ok(c) => c,
                 Err(e) => {
                     error!("Error: {e}");
@@ -54,11 +54,14 @@ pub fn run() -> Result<()> {
                 }
             };
 
-
-
             let mut responses = Vec::new();
             for i in 1..=5 {
-                match modrinth::call_modrinth(mods.clone(), &version, &modloader, &client) {
+                match modrinth::call_modrinth(
+                    config.mods.clone(),
+                    &config.version,
+                    &config.modloader,
+                    &client,
+                ) {
                     Ok(c) => {
                         responses = c;
                         break;
@@ -85,7 +88,7 @@ pub fn run() -> Result<()> {
                 }
             };
 
-            let links = match modrinth::generate_summary(vec_mods) {
+            let (links, ratio) = match modrinth::generate_summary(vec_mods) {
                 Ok(c) => c,
                 Err(e) => {
                     error!("Error: {e}");
@@ -96,10 +99,21 @@ pub fn run() -> Result<()> {
 
             let mut download_prompt = String::new();
 
-            println!("Would you like to download the files?(y/n)");
-            std::io::stdin()
-                .read_line(&mut download_prompt)
-                .expect("Failed to read line");
+            match config.threshold {
+                Some(v) => {
+                    if ratio > v {
+                        download_prompt = String::from("y");
+                    } else {
+                        download_prompt = String::from("n");
+                    };
+                }
+                None => {
+                    println!("Would you like to download the files?(y/n)");
+                    std::io::stdin()
+                        .read_line(&mut download_prompt)
+                        .expect("Failed to read line");
+                }
+            }
 
             if download_prompt.trim() == "y" {
                 modrinth::download_files(links);
@@ -107,7 +121,6 @@ pub fn run() -> Result<()> {
         }
 
         Commands::List(_list) => {
-
             let config_file: String = match config::read() {
                 Ok(c) => c,
                 Err(e) if e.kind() == ErrorKind::NotFound => {
@@ -127,7 +140,7 @@ pub fn run() -> Result<()> {
                 }
             };
 
-            let (mods, version, modloader) = match config::parse(config_file) {
+            let config_parsed = match config::parse(config_file) {
                 Ok(c) => c,
                 Err(e) => {
                     error!("Error: {e}");
@@ -136,13 +149,12 @@ pub fn run() -> Result<()> {
                 }
             };
 
-            config::list(mods, version, modloader);
+            config::list(config_parsed);
         }
         Commands::Select(_select) => {}
         Commands::Set(_set) => {}
         Commands::Add(_add) => {}
     }
-
 
     Ok(())
 }

@@ -1,6 +1,7 @@
 
 version = "26.3"
 modloader = "fabric"
+threshold = 0.9
 
 [mods.sodium]
 source = "modrinth"

@@ -6,8 +6,9 @@ use std::fs;
 
 #[derive(Deserialize, Serialize)]
 pub struct Config {
-    version: String,
-    modloader: String,
+    pub version: String,
+    pub modloader: String,
+    pub threshold: Option<f64>,
     pub mods: HashMap<String, ModInfo>,
 }
 
@@ -24,21 +25,24 @@ pub fn read() -> Result<String, std::io::Error> {
     Ok(config_file)
 }
 
-pub fn parse(
-    config_file: String,
-) -> Result<(HashMap<String, ModInfo>, String, String), toml::de::Error> {
+pub fn parse(config_file: String) -> Result<Config, toml::de::Error> {
     let config: Config = toml::from_str(&config_file)?;
 
-    let version = config.version;
-    let modloader = config.modloader;
-
-    let mods = config.mods;
-
-    Ok((mods, version, modloader))
+    Ok(config)
 }
 
-pub fn list(mods: HashMap<String, ModInfo>, version: String, modloader: String) {
+pub fn list(c: Config) -> () {
+    let Config {
+        modloader,
+        mods,
+        version,
+        threshold,
+    } = c;
+
     println!("Modloader: {modloader}");
+    if let Some(t) = threshold {
+        println!("Threshold: {t}");
+    }
     println!("Your mods:");
     for (name, _info) in mods {
         println!("name: {name}, version: {version}");
@@ -49,6 +53,7 @@ pub fn create_config() -> Result<()> {
     let config = Config {
         version: String::from("26.3"),
         modloader: String::from("fabric"),
+        threshold: Some(0.9),
         mods: HashMap::from([(
             String::from("sodium"),
             ModInfo {
