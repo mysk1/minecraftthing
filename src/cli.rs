@@ -35,7 +35,6 @@ pub struct Cli {
 pub enum Commands {
     /// This is for an epic TEST!
     Test(TestArgs),
-
     /// Update your mods
     Update(UpdateArgs),
     /// List mod folders and current versions
@@ -74,7 +73,9 @@ pub struct UpdateArgs {
 
 #[derive(Debug, Args)]
 pub struct ListArgs {
-    //
+    /// Lists all mod instances and mods inside
+    #[arg(short, long)]
+    pub all: bool,
 }
 
 #[derive(Debug, Args)]
@@ -102,10 +103,10 @@ pub struct SetArgs {
 
 #[derive(Debug, Args)]
 pub struct AddArgs {
-    // blegh!
+    // TODO: add this later
 }
 
 pub fn cli_parse() -> Result<Cli, clap::Error> {
     let args = Cli::try_parse();
-    return args;
+    args
 }

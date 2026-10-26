@@ -9,6 +9,7 @@ pub mod modrinth;
 use cli::Commands;
 
 pub fn run() -> Result<()> {
+
     let args = cli::cli_parse().unwrap_or_else(|error| error.exit());
 
     match args.command {
@@ -36,7 +37,7 @@ pub fn run() -> Result<()> {
                         "Writing default manifest into cwd, you should edit that file and run this again!"
                     );
 
-                    config::create_config();
+                    config::create_config()?;
                     return Ok(());
                 }
 
@@ -71,7 +72,7 @@ pub fn run() -> Result<()> {
                         info!("Trying again, try {i}/5");
 
                         if i == 5 {
-                            return Err(e.into());
+                            return Err(e);
                         } else {
                             continue;
                         }
@@ -116,7 +117,7 @@ pub fn run() -> Result<()> {
             }
 
             if download_prompt.trim() == "y" {
-                modrinth::download_files(links);
+                modrinth::download_files(links)?;
             }
         }
 
@@ -131,7 +132,7 @@ pub fn run() -> Result<()> {
 
                     println!("No manifest found in cwd, creating one");
 
-                    config::create_config();
+                    config::create_config()?;
                     return Ok(());
                 }
 
@@ -151,6 +152,7 @@ pub fn run() -> Result<()> {
 
             config::list(config_parsed);
         }
+
         Commands::Select(_select) => {}
         Commands::Set(_set) => {}
         Commands::Add(_add) => {}

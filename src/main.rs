@@ -1,5 +1,4 @@
 use anyhow::Result;
-use env_logger;
 use minecraftthing::run;
 
 fn main() -> Result<()> {

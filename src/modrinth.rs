@@ -1,6 +1,5 @@
 use anyhow::Result;
 use reqwest::blocking::Client;
-use serde::Serialize;
 use serde_json::Value;
 
 use std::collections::HashMap;
@@ -8,15 +7,6 @@ use std::io::Read;
 use std::time::Duration;
 
 use crate::config::ModInfo;
-
-pub fn create_client() -> Result<Client> {
-    let client = Client::builder()
-        .timeout(Duration::from_secs(30))
-        .connect_timeout(Duration::from_secs(10))
-        .user_agent("NUMMA")
-        .build()?;
-    Ok(client)
-}
 
 #[derive(Default)]
 pub struct Mod {
@@ -30,7 +20,16 @@ pub struct Mod {
     pub available: bool,
 }
 
-// given a list of mods, query all of them on modrinth
+pub fn create_client() -> Result<Client> {
+    let client = Client::builder()
+        .timeout(Duration::from_secs(30))
+        .connect_timeout(Duration::from_secs(10))
+        .user_agent("NUMMA")
+        .build()?;
+    Ok(client)
+}
+
+// TODO: make asynchronous with tokio
 pub fn call_modrinth(
     mods: HashMap<String, ModInfo>,
     version: &str,
@@ -82,13 +81,6 @@ pub fn call_modrinth(
     Ok(responses)
 }
 
-#[derive(Serialize)]
-struct _ApiResponse<T> {
-    success: bool,
-    data: T,
-    error: Option<String>,
-}
-
 pub fn parse_modrinth(responses: Vec<Mod>) -> Result<Vec<Mod>> {
     let mut vec_mods: Vec<Mod> = Vec::new();
 
@@ -99,7 +91,7 @@ pub fn parse_modrinth(responses: Vec<Mod>) -> Result<Vec<Mod>> {
         let url = parsed[0]["files"][0]["url"].to_string();
         let filename = parsed[0]["files"][0]["filename"].to_string();
 
-        let available = if url == "null" { false } else { true };
+        let available = url != "null";
 
         let mod_summary = Mod {
             url,

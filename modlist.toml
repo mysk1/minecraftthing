@@ -6,6 +6,7 @@ threshold = 0.9
 [mods.sodium]
 source = "modrinth"
 id = "AANobbMI"
+required = true
 
 [mods.fabric-api]
 source = "modrinth"

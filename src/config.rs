@@ -31,7 +31,7 @@ pub fn parse(config_file: String) -> Result<Config, toml::de::Error> {
     Ok(config)
 }
 
-pub fn list(c: Config) -> () {
+pub fn list(c: Config) {
     let Config {
         modloader,
         mods,
