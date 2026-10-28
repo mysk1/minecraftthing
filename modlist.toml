@@ -1,4 +1,3 @@
-
 version = "26.3"
 modloader = "fabric"
 threshold = 0.9
@@ -7,7 +6,3 @@ threshold = 0.9
 source = "modrinth"
 id = "AANobbMI"
 required = true
-
-[mods.fabric-api]
-source = "modrinth"
-id = "P7dR8mSH"

@@ -79,7 +79,9 @@ pub fn load() -> Result<Config> {
             if !prompt_create()? {
                 bail!("no {CONFIG_PATH} provided and none was created");
             }
-            read().with_context(|| format!("failed to read {CONFIG_PATH}"))?
+
+            println!("config generated at {CONFIG_PATH}, go edit it!");
+            std::process::exit(0);
         }
         Err(e) => return Err(e).with_context(|| format!("failed to read {CONFIG_PATH}")),
     };

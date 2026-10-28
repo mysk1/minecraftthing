@@ -33,8 +33,6 @@ pub struct Cli {
 
 #[derive(Debug, Subcommand)]
 pub enum Commands {
-    /// This is for an epic TEST!
-    Test(TestArgs),
     /// Update your mods
     Update(UpdateArgs),
     /// List mod folders and current versions
@@ -45,15 +43,6 @@ pub enum Commands {
     Set(SetArgs),
     /// Add a new mod
     Add(AddArgs),
-}
-
-#[derive(Debug, Args)]
-pub struct TestArgs {
-    #[arg(long)]
-    pub name: Option<String>,
-
-    #[arg(long)]
-    pub number: i32,
 }
 
 #[derive(Debug, Args)]
