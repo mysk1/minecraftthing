@@ -1,8 +1,10 @@
-use anyhow::Result;
+use anyhow::{Context, Result, bail};
+use inquire::Confirm;
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
 use std::fs;
+use std::io::ErrorKind;
 
 #[derive(Deserialize, Serialize)]
 pub struct Config {
@@ -19,19 +21,17 @@ pub struct ModInfo {
     pub required: Option<bool>,
 }
 
+const CONFIG_PATH: &str = "modlist.toml";
+
 pub fn read() -> Result<String, std::io::Error> {
-    let config_file = fs::read_to_string("modlist.toml")?;
-
-    Ok(config_file)
+    fs::read_to_string(CONFIG_PATH)
 }
 
-pub fn parse(config_file: String) -> Result<Config, toml::de::Error> {
-    let config: Config = toml::from_str(&config_file)?;
-
-    Ok(config)
+pub fn parse(config_file: &str) -> Result<Config, toml::de::Error> {
+    toml::from_str(config_file)
 }
 
-pub fn list(c: Config) {
+pub fn list(c: &Config) {
     let Config {
         modloader,
         mods,
@@ -66,7 +66,35 @@ pub fn create_config() -> Result<()> {
 
     let toml_string = toml::to_string_pretty(&config)?;
 
-    fs::write("test.toml", toml_string)?;
+    fs::write(CONFIG_PATH, toml_string)?;
 
     Ok(())
+}
+
+//loads the config to stop redundancy with the list and update subcommands
+pub fn load() -> Result<Config> {
+    let contents: String = match read() {
+        Ok(c) => c,
+        Err(e) if e.kind() == ErrorKind::NotFound => {
+            if !prompt_create()? {
+                bail!("no {CONFIG_PATH} provided and none was created");
+            }
+            read().with_context(|| format!("failed to read {CONFIG_PATH}"))?
+        }
+        Err(e) => return Err(e).with_context(|| format!("failed to read {CONFIG_PATH}")),
+    };
+
+    parse(&contents).with_context(|| format!("failed to parse {CONFIG_PATH}"))
+}
+
+//also i dont think we really have to follow the like no printing allowed outside of main idk its dumb and doesnt apply to us
+pub fn prompt_create() -> Result<bool> {
+    let create = Confirm::new("No manifest found in cwd, would you like to create one?")
+        .with_default(true)
+        .prompt()?;
+    if create {
+        println!("Creating default configuration...");
+        create_config()?;
+    }
+    Ok(create)
 }
