@@ -1,4 +1,5 @@
 use anyhow::Result;
+use inquire::Confirm;
 use reqwest::blocking::Client;
 use serde_json::Value;
 
@@ -164,4 +165,11 @@ fn rem_first_and_last(value: &str) -> &str {
     chars.next();
     chars.next_back();
     chars.as_str()
+}
+
+pub fn prompt_download() -> Result<bool> {
+    let download = Confirm::new("Would you like to download the files?")
+        .with_default(true)
+        .prompt()?;
+    Ok(download)
 }

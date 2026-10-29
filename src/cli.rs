@@ -96,6 +96,5 @@ pub struct AddArgs {
 }
 
 pub fn cli_parse() -> Result<Cli, clap::Error> {
-    let args = Cli::try_parse();
-    args
+    Cli::try_parse()
 }

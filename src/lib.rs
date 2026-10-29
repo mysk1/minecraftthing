@@ -13,9 +13,7 @@ pub fn run() -> Result<()> {
 
     match args.command {
         Commands::Update(update_args) => commands::update::execute(update_args)?,
-
         Commands::List(list_args) => commands::list::execute(list_args)?,
-
         Commands::Select(_select) => {}
         Commands::Set(_set) => {}
         Commands::Add(_add) => {}

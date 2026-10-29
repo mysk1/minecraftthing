@@ -44,7 +44,7 @@ pub fn list(c: &Config) {
         println!("Threshold: {t}");
     }
     println!("Your mods:");
-    for (name, _info) in mods {
+    for name in mods.keys() {
         println!("name: {name}, version: {version}");
     }
 }

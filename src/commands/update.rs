@@ -52,25 +52,19 @@ pub fn execute(_args: UpdateArgs) -> anyhow::Result<()> {
         }
     };
 
-    let mut download_prompt = String::new();
+    let download_prompt;
 
     match config.threshold {
         Some(v) => {
-            if ratio > v {
-                download_prompt = String::from("y");
-            } else {
-                download_prompt = String::from("n");
-            };
+            download_prompt = ratio > v;
         }
         None => {
-            println!("Would you like to download the files?(y/n)");
-            std::io::stdin()
-                .read_line(&mut download_prompt)
-                .expect("Failed to read line");
+            download_prompt = modrinth::prompt_download()?;
         }
     }
 
-    if download_prompt.trim() == "y" {
+    if download_prompt {
+        println!("Downloading mods...");
         modrinth::download_files(links)?;
     }
     Ok(())
